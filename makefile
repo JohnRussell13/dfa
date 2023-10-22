@@ -16,7 +16,14 @@ run_pass:
 	mpirun -np 7 ./pass
 
 run:
-	mpirun -np 15 ./main 100 50 30 10
+	mpirun -np 8 ./main 100 200 100
+
+test: test.c
+	mpic++ test.c -o test
+	mpirun -np 8 ./test 10 10
+
+t:
+	mpirun -np 8 ./test 10 10
 
 .PHONY: clean
 clean:

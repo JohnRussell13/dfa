@@ -190,7 +190,7 @@ input = [i.flatten()/256 - 1/2 for i in input]
 output = y_test
 output = [i.flatten() for i in output]
 
-dim = [14*14,100,100,10]
+dim = [14*14,100,10]
 len_dim = len(dim)-1
 
 #MPI INIT
@@ -201,13 +201,13 @@ if rank != size:
     layer_part_size = int(dim[layer+1]/per_layer)
 
 k = 14/28
-epochs = 10
+epochs = 1000
 
 #
 #   Preprocessing
 #
-size1 = 100
-size2 = 101
+size1 = 10000
+size2 = 10000
 a = x_train[:size1]
 a = [cv2.resize(i, (0, 0), fx = k, fy = k) for i in a]
 a = [i.flatten()/256 - 1/2 for i in a]

@@ -8,3 +8,6 @@ main:
 
 pass:
 	mpiexec -n 7 python pass.py
+
+test:
+	mpiexec -n 8 python test.py

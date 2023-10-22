@@ -10,6 +10,14 @@
 
 #define tag 0
 
+double triang_distr(double var) {
+    return (rand() * var / RAND_MAX) + (rand() * var / RAND_MAX) - var;
+}
+
+double unif_distr(double var) {
+    return -var + (rand() * (2*var) / RAND_MAX);
+}
+
 void fprint_arri(FILE *fp, int *arr, int n){
     for(int i = 0; i < n; i++){
         fprintf(fp, "%d ", arr[i]);
@@ -50,7 +58,7 @@ int largest(double *arr, int n){
     return ind;
 }
 
-int main (int argc, char **argv){
+int main(int argc, char **argv){
     /* NETWORK PARAMS */
     int len_dim = argc-1;
     int *dim = (int*) malloc((len_dim + 1) * sizeof(int));
@@ -60,7 +68,7 @@ int main (int argc, char **argv){
     }
 
     double val_split = 0.2; // PART USED FOR TESTING
-    int epochs = 100; // NUMBER OF EPOCHS
+    int epochs = 250; // NUMBER OF EPOCHS
     double learn_rate = 0.05; // LEARNING COEF.
     int batch_size = 1; // MAXIMAL SIZE OF ONE BATCH
     //double lambda = 0.0000001; // L2 REG
@@ -145,7 +153,7 @@ int main (int argc, char **argv){
         }
         for(int i = 0; i < this_block_size; i++){
             for(int j = 0; j < size_prev_layer+1; j++){
-                weights[i][j] = (double(rand())/RAND_MAX - 0.5) / 4; // W ~ U(-0.125, 0.125)
+                weights[i][j] = triang_distr(0.1); // (double(rand())/RAND_MAX - 0.5) / 4; // W ~ U(-0.125, 0.125)
             }
         }
     }
@@ -158,7 +166,9 @@ int main (int argc, char **argv){
         for(int i = 0; i < this_block_size << 1; i++){
             for(int j = 0; j < last_size; j++){
                 temp_rand = (double(rand()+1)/RAND_MAX); // random
-                B[i][j] = temp_rand*temp_rand/sqrt(size_prev_layer); //sqrt(size_prev_layer)
+                B[i][j] = triang_distr(0.01);
+
+                // B[i][j] = temp_rand*temp_rand/sqrt(size_prev_layer); //sqrt(size_prev_layer)
 
                 // B ~ N(0,1) * 0.05    
                 // temp_rand = sqrt(-log((double(rand()+1)/RAND_MAX))) * cos(2*M_PI*(double(rand()+1)/RAND_MAX));

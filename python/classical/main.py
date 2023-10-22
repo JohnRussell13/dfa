@@ -1,15 +1,13 @@
-import math
 import copy
 import numpy as np
-import tensorflow.keras as keras
 import tensorflow as tf
 (x_train, y_train),(x_test, y_test) = tf.keras.datasets.mnist.load_data()
 
 import warnings
-warnings.filterwarnings("error")
+warnings.filterwarnings("error") # lib throwing warning
 
 ##
-##	Pass input trough the network
+##	Pass input through the network
 ##
 
 def net(input, weights, output_temp, len_dim, dim):
@@ -23,21 +21,15 @@ def net(input, weights, output_temp, len_dim, dim):
         if (i+1) < len_dim:
             output[i+1][output[i+1] < 0] = 0 #relu
         else:
-            # for q in range(10):
-            #     try:
-            #         np.exp(output[-1][q])
-            #     except:
-            #         print(output)
-            #         print("------------------------------------------------------")
-            #         print(weights)
-            output[i+1] = np.exp(output[-1])/np.sum(np.exp(output[-1])) #softmax
+            output[i+1] = np.exp(output[-1])/np.sum(np.exp(output[-1])) # softmax
     return output
 
 ##
 ##	Train the network
 ##
 
-def train(input, output,  blind_in, blind_out, epochs, dim, p = 0.2, learn_rate = 0.05):
+def train(input, output,  blind_in, blind_out, 
+        epochs, dim, p = 0.2, learn_rate = 0.05):
 
 ##
 ##	Init values
@@ -50,28 +42,18 @@ def train(input, output,  blind_in, blind_out, epochs, dim, p = 0.2, learn_rate 
     for i in dim:
         output_temp.append(np.zeros(i))
     len_dim = len(dim)-1
-    r = []
-    for i in range(len_dim):
-        r.append([dim[i], dim[i+1]])
-    nVar = 0
     dimVar = []
     for i in range(len_dim):
-        nVar += (dim[i]+1) * dim[i+1]
         dimVar.append((dim[i+1], (dim[i]+1)))
-    VarMin = -1
-    VarMax = 1
     outs_temp = np.eye(dim[-1])
+
     B = []
     for i in range(len_dim-1):
-        B.append(np.random.normal(0, 0.1, [dim[i+1] * 2, dim[-1]])) #bias
-    deltas = copy.deepcopy(output_temp)
+        B.append(np.random.normal(0, 0.01, [dim[i+1] * 2, dim[-1]])) #bias
     epoch_w = []
-
-    # Init weights
-    #weights = np.random.uniform(VarMin, VarMax, nVar)
     weights = []
     for i in range(len_dim):
-        weights.append(np.random.normal(0, 0.1, dimVar[i]))
+        weights.append(np.random.triangular(-0.1, 0, 0.1, dimVar[i]))
 
 ##
 ##	Start the training
@@ -108,9 +90,6 @@ def train(input, output,  blind_in, blind_out, epochs, dim, p = 0.2, learn_rate 
                 da.append(np.dot(B[i], delta))
             da.append(np.append(delta, delta))
 
-            #not needed, just for ilustration
-            #use da[i][:dim[i+1]] instead of dw
-            #use da[i][dim[i+1]:] instead of db
             dw = []
             db = []
             for i in range(len_dim):
@@ -122,11 +101,8 @@ def train(input, output,  blind_in, blind_out, epochs, dim, p = 0.2, learn_rate 
 ##
 
             for i in range(len_dim):
-                weights[i][:,:-1] += -learn_rate*np.tensordot(dw[i], out[i], axes=0) #- lmd*weights[i][:,:-1]
-                weights[i][:,-1] += -learn_rate*db[i] #- lmd*weights[i][:,-1]
-            
-            #weights[weights < -1] = -1
-            #weights[weights > 1] = 1
+                weights[i][:,:-1] += -learn_rate*np.tensordot(dw[i], out[i], axes=0)
+                weights[i][:,-1] += -learn_rate*db[i]
 
 ##
 ##	Test and print the results
@@ -152,12 +128,11 @@ def train(input, output,  blind_in, blind_out, epochs, dim, p = 0.2, learn_rate 
         epoch_w.append(weights)
     return epoch_w
 
-    
 import cv2
 import time
 
-size = 100
-size2 = 100
+size = 1000
+size2 = 1000
 
 k = 14/28
 
@@ -175,8 +150,8 @@ c = [i.flatten()/256 - 1/2 for i in c]
 d = y_test[:size2]
 d = [i.flatten() for i in d]
 
-epochs = 30
-dim = [14*14,10,10,10]
+epochs = 50
+dim = [14*14,100,10]
 start = time.perf_counter()
 epoch_w = train(a, b, c, d, epochs, dim)
 end = time.perf_counter()

@@ -1,5 +1,3 @@
-import math
-import copy
 import numpy as np
 import tensorflow.keras as keras
 (x_train, y_train),(x_test, y_test) = keras.datasets.mnist.load_data()

@@ -8,7 +8,7 @@ import cv2
 size = 10000
 size2 = 10000
 
-k = 14/28
+k = 14/28 # scaling factor
 
 a = x_train[:size]
 a = [cv2.resize(i, (0, 0), fx = k, fy = k) for i in a]
